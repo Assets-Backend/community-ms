@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model client_has_professional {
+  client_fk       Int
+  professional_fk Int
+  deleted_at      DateTime?       @db.Timestamp(6)
+  created_at      DateTime        @default(now()) @db.Timestamp(6)
+  updated_at      DateTime        @default(now()) @db.Timestamp(6)
+  work_invitation work_invitation @relation(fields: [client_fk, professional_fk], references: [client_fk, professional_fk], onDelete: NoAction, onUpdate: NoAction, map: "client_has_professional_fkey")
+
+  @@id([client_fk, professional_fk])
+}
+
+model work_invitation {
+  client_fk               Int
+  professional_fk         Int
+  sender                  user_types
+  accepted_at             DateTime?                @db.Date
+  created_at              DateTime                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime                 @default(now()) @db.Timestamp(6)
+  client_has_professional client_has_professional?
+
+  @@id([client_fk, professional_fk])
+}
+
+enum user_types {
+  professional
+  client
+}
