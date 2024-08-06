@@ -1,35 +1,22 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ClientHasProfessionalService } from './client-has-professional.service';
-import { CreateClientHasProfessionalDto } from './dto/create-client-has-professional.dto';
-import { UpdateClientHasProfessionalDto } from './dto/update-client-has-professional.dto';
+import { CreateClientHasProfessionalDto, UpdateClientHasProfessionalDto } from './dto';
+import { client_has_professional } from '@prisma/client';
 
 @Controller()
 export class ClientHasProfessionalController {
-  constructor(private readonly clientHasProfessionalService: ClientHasProfessionalService) {}
 
-  @MessagePattern('createClientHasProfessional')
-  create(@Payload() createClientHasProfessionalDto: CreateClientHasProfessionalDto) {
-    return this.clientHasProfessionalService.create(createClientHasProfessionalDto);
-  }
+    constructor(private readonly clientHasProfessionalService: ClientHasProfessionalService) {}
 
-  @MessagePattern('findAllClientHasProfessional')
-  findAll() {
-    return this.clientHasProfessionalService.findAll();
-  }
+    @MessagePattern('community.find.professional')
+    create(
+        @Payload('relation') relation: { client_fk: number, professional_fk: number },
+    ): Promise<client_has_professional> {
 
-  @MessagePattern('findOneClientHasProfessional')
-  findOne(@Payload() id: number) {
-    return this.clientHasProfessionalService.findOne(id);
-  }
+        return this.clientHasProfessionalService.findOneByUnique({
+            whereUniqueInput: { client_fk_professional_fk: relation }
+        })
+    }
 
-  @MessagePattern('updateClientHasProfessional')
-  update(@Payload() updateClientHasProfessionalDto: UpdateClientHasProfessionalDto) {
-    return this.clientHasProfessionalService.update(updateClientHasProfessionalDto.id, updateClientHasProfessionalDto);
-  }
-
-  @MessagePattern('removeClientHasProfessional')
-  remove(@Payload() id: number) {
-    return this.clientHasProfessionalService.remove(id);
-  }
 }

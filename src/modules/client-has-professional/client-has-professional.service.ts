@@ -1,26 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { CreateClientHasProfessionalDto } from './dto/create-client-has-professional.dto';
-import { UpdateClientHasProfessionalDto } from './dto/update-client-has-professional.dto';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { CreateClientHasProfessionalDto, UpdateClientHasProfessionalDto } from './dto';
+import { client_has_professional, Prisma, PrismaClient } from '@prisma/client';
+import { RpcException } from '@nestjs/microservices';
+import { ClientIds } from 'src/common/interface/client-ids.interface';
 
 @Injectable()
-export class ClientHasProfessionalService {
-  create(createClientHasProfessionalDto: CreateClientHasProfessionalDto) {
-    return 'This action adds a new clientHasProfessional';
-  }
+export class ClientHasProfessionalService extends PrismaClient implements OnModuleInit {
 
-  findAll() {
-    return `This action returns all clientHasProfessional`;
-  }
+    private readonly logger = new Logger('ClientHasProfessionalService');
 
-  findOne(id: number) {
-    return `This action returns a #${id} clientHasProfessional`;
-  }
+    async onModuleInit() {
+        await this.$connect();
+        this.logger.log('Connected to the database');
+    }
 
-  update(id: number, updateClientHasProfessionalDto: UpdateClientHasProfessionalDto) {
-    return `This action updates a #${id} clientHasProfessional`;
-  }
+    async findOneByUnique(params: {
+        whereUniqueInput: Prisma.client_has_professionalWhereUniqueInput,
+        select?: Prisma.client_has_professionalSelect
+    }): Promise<client_has_professional> {
 
-  remove(id: number) {
-    return `This action removes a #${id} clientHasProfessional`;
-  }
+        const {whereUniqueInput: where, select} = params
+
+        try {
+            
+            return await this.client_has_professional.findUniqueOrThrow({ where, select })
+
+        } catch (error) {
+            throw new RpcException({
+                status: 400,
+                message: error.message
+            });
+        }
+    }
 }

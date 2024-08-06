@@ -1,8 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { WorkInvitationService } from './work-invitation.service';
-import { CreateWorkInvitationDto } from './dto/create-work-invitation.dto';
-import { UpdateWorkInvitationDto } from './dto/update-work-invitation.dto';
+import { CreateWorkInvitationDto, UpdateWorkInvitationDto } from './dto';
 
 @Controller()
 export class WorkInvitationController {
